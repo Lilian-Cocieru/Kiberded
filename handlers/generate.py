@@ -1,9 +1,9 @@
 from openai import AsyncOpenAI
-from config import AI_TOKEN_D, AI_TOKEN_Q, AI_TOKEN_G, AI_TOKEN_M
+from config import QWEN_API_KEY, MISTRAL_API_KEY, DEEPSEEK_API_KEY
 
 client = AsyncOpenAI(
   base_url="https://openrouter.ai/api/v1",
-  api_key=AI_TOKEN_Q,
+  api_key=QWEN_API_KEY,
 )
 
 async def ai_generate(text: str):
