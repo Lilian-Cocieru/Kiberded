@@ -248,6 +248,3 @@ pytest
 ```
 black . && isort .
 ```
-
----
-
