@@ -4,10 +4,10 @@ from aiogram.filters import CommandStart
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
-from handlers.generate import ai_generate
+from ai_utils import ai_generate
 
 
-gen_router = Router()
+gen = Router()
 
 
 class Gen(StatesGroup):
@@ -15,12 +15,12 @@ class Gen(StatesGroup):
 
 
     
-@gen_router.message(F.state == Gen.waiting)
+@gen.message(F.state == Gen.waiting)
 async def stop_flood(message: Message):
     await message.answer('Подождите, ваш запрос генерируется')
     
     
-@gen_router.message()
+@gen.message()
 async def generating(message: Message, state: FSMContext):
     await state.set_state(Gen.waiting)
     await ai_generate(message.text)
