@@ -19,10 +19,11 @@ services:
       BOT_TOKEN: ${BOT_TOKEN}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-      DB_HOST: db # Важно: здесь 'db' - это имя сервиса БД в Docker Compose
+      DB_HOST: db # Важно: 'db' - это имя сервиса БД в Docker Compose
       DB_NAME: ${DB_NAME}
     depends_on:
       - db
 
 volumes:
   db_data:
+  
