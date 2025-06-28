@@ -9,7 +9,7 @@ from handlers.gen_handlers import gen
 from handlers.start import user_router
 
 async def main():
-    bot = Bot(token="TG_TOKEN")
+    bot = Bot(token=TG_TOKEN)
     dp = Dispatcher()
     dp.include_router(gen)
     dp.include_router(user_router)
