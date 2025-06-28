@@ -1,4 +1,3 @@
-version: '3.8'
 
 services:
   db:
@@ -17,7 +16,7 @@ services:
     build: .
     restart: always
     environment:
-      BOT_TOKEN: ${TG}
+      BOT_TOKEN: ${BOT_TOKEN}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_HOST: db # Важно: здесь 'db' - это имя сервиса БД в Docker Compose
