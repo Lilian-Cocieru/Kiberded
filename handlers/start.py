@@ -1,47 +1,57 @@
 
 
-# Пример использования в handlers/start.py или handlers/gen_handlers.py
+
+# C:\Users\Computer\Desktop\python\Kiberded\handlers\start.py
 from aiogram import Router, types
 from aiogram.filters import CommandStart
-from database.engine import SessionLocal # Импортируем SessionLocal
+from database.engine import SessionLocal
 from repositories.user import UserRepository
 from repositories.ai_model import AIModelRepository
-# ... другие импорты репозиториев
 
-user_router = Router()
+start_router = Router()
 
-@user_router.message(CommandStart())
+@start_router.message(CommandStart())
 async def cmd_start(message: types.Message):
-    async with SessionLocal() as session: # Получаем асинхронную сессию
+    async with SessionLocal() as session:
         user_repo = UserRepository(session)
-        ai_model_repo = AIModelRepository(session) # Если нужна AI модель
+        ai_model_repo = AIModelRepository(session)
 
-        # Создаем или получаем пользователя
-        # Поскольку ai_model_id теперь nullable, при создании он будет None,
-        # пока пользователь не выберет модель.
+        # Добавил full_name в вызов create_or_get_user
         user = await user_repo.create_or_get_user(
             tg_id=message.from_user.id,  # type: ignore
-            username=message.from_user.username  # type: ignore
+            username=message.from_user.username,  # type: ignore
+            full_name=message.from_user.full_name # type: ignore
         )
 
-        # Пример: если пользователь ещё не выбрал модель, предложите ему
         if user.ai_model_id is None:
-            # Здесь можем запросить AIModelRepository
-            # и отправить инлайн-клавиатуру с выбором моделей.
-            models = await ai_model_repo.get_all() # Получить все доступные модели
-            model_names = [m.name for m in models]
+            all_models = await ai_model_repo.get_all()
+            if not all_models:
+                await message.answer("Извините, сейчас нет доступных AI-моделей. Попробуйте позже.")
+                return
+
+            keyboard_buttons = []
+            for model_obj in all_models:
+                keyboard_buttons.append([types.InlineKeyboardButton(text=model_obj.name, callback_data=f"select_model:{model_obj.id}")])
+            keyboard = types.InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
+            
             await message.answer(
-                f"Привет, {user.username}! Добро пожаловать. Пожалуйста, выберите AI модель для работы:\n" +
-                ", ".join(model_names) # Здесь будет логика инлайн-клавиатуры
+                f"Привет, {user.full_name or user.username}! Добро пожаловать! Пожалуйста, выберите AI-модель для работы:",
+                reply_markup=keyboard
             )
+
         else:
-            # Если модель уже выбрана, приветствуем
-            await message.answer(f"С возвращением, {user.username}! Ваша текущая модель: {user.ai_model.name}")  # type: ignore
-        
-        # Пример: создание урока
-        # lesson_repo = LessonRepository(session)
-        # new_lesson = await lesson_repo.create(user_id=user.id, title="Первое занятие")
-        # await message.answer(f"Создано новое занятие: {new_lesson.title}")
+            selected_model = await ai_model_repo.get_by_id(user.ai_model_id)  # type: ignore
+            if selected_model:
+                await message.answer(f"С возвращением, {user.full_name or user.username}! Ваша текущая модель: **{selected_model.name}**. Отправьте мне запрос!")
+            else:
+                await message.answer("Ваша предыдущая AI-модель не найдена. Пожалуйста, выберите новую.")
+                all_models = await ai_model_repo.get_all()
+                if all_models:
+                    keyboard_buttons = []
+                    for model_obj in all_models:
+                        keyboard_buttons.append([types.InlineKeyboardButton(text=model_obj.name, callback_data=f"select_model:{model_obj.id}")])
+                    keyboard = types.InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
+                    await message.answer("Пожалуйста, выберите AI-модель:", reply_markup=keyboard)
 
 
 

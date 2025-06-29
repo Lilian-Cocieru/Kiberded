@@ -74,6 +74,7 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     tg_id: Mapped[int] = mapped_column(Integer, unique=True, index=True)
     username: Mapped[str] = mapped_column(String, nullable=True)
+    full_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     language_code: Mapped[str] = mapped_column(String, default="ru")     # Язык
     ai_model_id: Mapped[Optional[int]] = mapped_column(ForeignKey("ai_models.id"), nullable=True)     # Ссылка на AIModel.id ИЗМЕНЕНО: теперь nullable=True, без default
     ai_model: Mapped[Optional["AIModel"]] = relationship("AIModel")      # Связь с объектом AIModel relationship тоже Optional
@@ -87,7 +88,6 @@ class User(Base):
     lessons = relationship("Lesson", back_populates="user", cascade="all, delete-orphan")
     voice_messages = relationship("VoiceMessage", back_populates="user", cascade="all, delete-orphan")
     payments = relationship("Payment", back_populates="user", cascade="all, delete-orphan") # Новое отношение для Payment
-
 
 
 
@@ -118,3 +118,4 @@ class Payment(Base):
     
     # Связь с пользователем
     user = relationship("User", back_populates="payments", lazy="joined")
+    
