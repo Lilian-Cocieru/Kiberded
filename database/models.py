@@ -1,3 +1,6 @@
+
+# C:\Users\Computer\Desktop\python\Kiberded\database\models.py
+
 from sqlalchemy.orm import Mapped, mapped_column, relationship, DeclarativeBase
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy import Integer, String, Boolean, Text, DateTime, ForeignKey, Numeric 
@@ -9,8 +12,10 @@ from typing import Optional
 def current_utc_datetime():
     return datetime.utcnow()
 
+
 class Base(DeclarativeBase, AsyncAttrs):
     pass
+
 
 class AIModel(Base):
     __tablename__ = "ai_models"
@@ -68,6 +73,7 @@ class VoiceMessage(Base):
 
     user = relationship("User", back_populates="voice_messages", lazy="joined") # Связь с пользователем
 
+
 class User(Base):
     __tablename__ = "users"
 
@@ -88,7 +94,6 @@ class User(Base):
     lessons = relationship("Lesson", back_populates="user", cascade="all, delete-orphan")
     voice_messages = relationship("VoiceMessage", back_populates="user", cascade="all, delete-orphan")
     payments = relationship("Payment", back_populates="user", cascade="all, delete-orphan") # Новое отношение для Payment
-
 
 
 class Payment(Base):
