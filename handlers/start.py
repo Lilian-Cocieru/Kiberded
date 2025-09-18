@@ -1,19 +1,53 @@
-
-
-# C:\Users\Computer\Desktop\python\Kiberded\handlers\start.py
-
-# 🌟 ИСПРАВЛЕНИЕ: Убраны все импорты и обработчики, не относящиеся к команде /start.
-
+# handlers/start.py
 from aiogram import Router
 from aiogram.types import Message
 from aiogram.filters import CommandStart
+from sqlalchemy import select
+
+from database.engine import SessionLocal
+from database.models import User
 
 # Создаём роутер для start-команды
 start_router = Router()
 
 @start_router.message(CommandStart())
 async def start_handler(message: Message):
-    await message.answer("Hi! I am Kiberded, I am ready to help with my studies.")
+    """
+    Обрабатывает команду /start и сохраняет пользователя в БД.
+    """
+    async with SessionLocal() as session:
+        # Проверяем, существует ли пользователь с таким ID
+        existing_user = await session.execute(
+            select(User).where(User.tg_id == message.from_user.id)
+        )
+        user = existing_user.scalar_one_or_none()
+
+        if user is None:
+            # Если пользователь не найден, создаём новую запись
+            new_user = User(
+                tg_id=message.from_user.id,
+                username=message.from_user.username,
+                full_name=message.from_user.full_name
+            )
+            session.add(new_user)
+            await session.commit()
+            await message.answer("Hi! I am Kiberded, I am ready to help with my studies. You have been added to the database.")
+        else:
+            # Если пользователь уже существует, просто приветствуем его
+            await message.answer("Welcome back! I am ready to help with my studies.")
+
+# # 🌟 ИСПРАВЛЕНИЕ: Убраны все импорты и обработчики, не относящиеся к команде /start.
+
+# from aiogram import Router
+# from aiogram.types import Message
+# from aiogram.filters import CommandStart
+
+# # Создаём роутер для start-команды
+# start_router = Router()
+
+# @start_router.message(CommandStart())
+# async def start_handler(message: Message):
+#     await message.answer("Hi! I am Kiberded, I am ready to help with my studies.")
 
 
 

@@ -8,4 +8,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Копируем весь остальной код проекта в контейнер
 COPY . .
 # Указываем команду, которая будет запускаться при старте контейнера
-CMD ["python", "bot.py"]
+CMD ["python", "main.py"]

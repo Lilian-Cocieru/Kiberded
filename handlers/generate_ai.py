@@ -6,10 +6,17 @@ from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
+from llama_index.core.query_engine import BaseQueryEngine
+
 
 from openai import AsyncOpenAI
+
+
 from config import OR_API_KEY
 from handlers.utils import send_long_message
+from database.data_loader import create_and_save_index
+
+
 
 # Создаём роутер для обработки AI-запросов
 generate_ai_router = Router()
@@ -45,25 +52,69 @@ async def generate_response_from_ai(text: str):
 async def generating(message: Message, state: FSMContext):
     """
     Обработчик для всех текстовых сообщений.
-    Управляет состоянием в одном месте.
+    Управляет состоянием и решает, использовать ли RAG.
     """
-    # 🌟 НОВОЕ: Проверяем текущее состояние FSM.
     current_state = await state.get_state()
     
-    # Если бот уже в состоянии "ожидания", сообщаем об этом и выходим.
     if current_state == Gen.wait:
-        await message.answer("Пожалуйста, подождите, ваш предыдущий запрос ещё обрабатывается.")
-        return # Завершаем выполнение функции
+        await message.answer("Please wait, your previous request is still processed.")
+        return
 
-    # Если состояние None (т.е., бот свободен), начинаем генерацию.
     await state.set_state(Gen.wait)
-    await message.answer("Генерирую ответ... Пожалуйста, подождите.")
-
+    await message.answer("I generate the answer ... Please wait.")
+    
+    response: str = ""
+    query_engine: BaseQueryEngine = None
+    
     try:
-        response = await generate_response_from_ai(message.text)
+        # Проверяем, если запрос связан с "уроками" или "задачами".
+        if "lessons" in message.text.lower() or "tasks" in message.text.lower():
+            # Создаём движок запросов на основе данных пользователя (RAG)
+            index = await create_and_save_index(user_id=message.from_user.id)
+            if index:
+                query_engine = index.as_query_engine()
+        
+        if query_engine:
+            # Если движок RAG создан, используем его
+            response = await query_engine.query(message.text)
+        else:
+            # Иначе используем обычную генерацию
+            response = await generate_response_from_ai(message.text)
+            
         await send_long_message(message, response)
+        
     finally:
         await state.clear()
+
+
+
+
+
+
+
+# @generate_ai_router.message(F.text)
+# async def generating(message: Message, state: FSMContext):
+#     """
+#     Обработчик для всех текстовых сообщений.
+#     Управляет состоянием в одном месте.
+#     """
+#     # 🌟 НОВОЕ: Проверяем текущее состояние FSM.
+#     current_state = await state.get_state()
+    
+#     # Если бот уже в состоянии "ожидания", сообщаем об этом и выходим.
+#     if current_state == Gen.wait:
+#         await message.answer("Пожалуйста, подождите, ваш предыдущий запрос ещё обрабатывается.")
+#         return # Завершаем выполнение функции
+
+#     # Если состояние None (т.е., бот свободен), начинаем генерацию.
+#     await state.set_state(Gen.wait)
+#     await message.answer("Генерирую ответ... Пожалуйста, подождите.")
+
+#     try:
+#         response = await generate_response_from_ai(message.text)
+#         await send_long_message(message, response)
+#     finally:
+#         await state.clear()
 
 
 # 🌟 ИСПРАВЛЕНИЕ: Используем F.state.ne(Gen.wait) вместо ~Gen.wait
@@ -89,13 +140,16 @@ async def generating(message: Message, state: FSMContext):
 #         # 🌟 Обязательно очищаем состояние, даже если произошла ошибка
 #         await state.clear()
 
-@generate_ai_router.message(Gen.wait)
-async def stop_flood(message: Message):
-    """
-    🌟 Обработчик, который срабатывает, если пользователь отправил новое сообщение
-    во время генерации предыдущего ответа.
-    """
-    await message.answer("Please wait, your previous request is still being processed.")
+
+
+
+# @generate_ai_router.message(Gen.wait)
+# async def stop_flood(message: Message):
+#     """
+#     🌟 Обработчик, который срабатывает, если пользователь отправил новое сообщение
+#     во время генерации предыдущего ответа.
+#     """
+#     await message.answer("Please wait, your previous request is still being processed.")
 
 
 
