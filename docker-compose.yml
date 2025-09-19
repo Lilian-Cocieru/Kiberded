@@ -23,6 +23,10 @@ services:
       DB_NAME: ${DB_NAME}
     depends_on:
       - db
+    dns:
+    - 8.8.8.8
+    - 1.1.1.1
+
 
 volumes:
   db_data:

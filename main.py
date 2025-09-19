@@ -7,6 +7,8 @@ import logging
 from aiogram import Bot, Dispatcher
 from config import TG_TOKEN
 
+
+from database.engine import init_db
 from handlers.start import start_router
 from handlers.lessons import lessons_router
 from handlers.generate_ai import generate_ai_router
@@ -24,6 +26,7 @@ async def main():
     dp.include_router(settings_router)
     dp.include_router(lessons_router)        # Роутер уроков
     dp.include_router(generate_ai_router)    # Строка для подключения роутера генерации
+    await init_db()
 
 
     # Запускаем бота
