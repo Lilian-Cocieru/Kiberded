@@ -13,3 +13,37 @@ DB_HOST = os.getenv("DB_HOST")
 DB_PORT = os.getenv("DB_PORT")
 TG_TOKEN = os.getenv("TEST_BOT_TOKEN")
 OR_API_KEY = os.getenv("TEST_OPENROUTER_API_KEY")
+
+
+MODEL_GPT4O = {
+    "id": 1,
+    "name": "GPT-4o",
+    "provider": "OpenRouter",
+    "model_code": "openai/gpt-4o",
+    "is_paid": True,
+    "default_limit": 500000,
+    "is_active": True
+}
+
+MODEL_QWEN = {
+    "id": 2,
+    "name": "Qwen 3",
+    "provider": "OpenRouter",
+    "model_code": "qwen/qwen3-30b-a3b:free",
+    "is_paid": False,
+    "default_limit": 100000,
+    "is_active": True
+}
+
+MODEL_GEMINI_FLASH = {
+    "id": 3,
+    "name": "Gemini Flash",
+    "provider": "Google",
+    "model_code": "google/gemini-1.5-flash",
+    "is_paid": False,
+    "default_limit": 100000,
+    "is_active": True
+}
+
+ALL_MODELS = [MODEL_GPT4O, MODEL_QWEN, MODEL_GEMINI_FLASH]
+

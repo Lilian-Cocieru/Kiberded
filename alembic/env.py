@@ -1,4 +1,4 @@
-# alembic/env.py
+# C:\Users\Computer\Desktop\python\Kiberded\alembic\env.py
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -62,7 +62,7 @@ async def run_migrations_online() -> None:
     """Run migrations in 'online' mode.
     В этом режиме мы создаем движок с помощью URL из config.py
     """
-    connectable_url = f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    connectable_url = f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@localhost:{DB_PORT}/{DB_NAME}"
 
     # Создаем асинхронный движок через create_async_engine
     connectable = create_async_engine(connectable_url, poolclass=pool.NullPool)
