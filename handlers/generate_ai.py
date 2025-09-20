@@ -6,6 +6,9 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from llama_index.core.query_engine import BaseQueryEngine
 from openai import AsyncOpenAI
+from sqlalchemy import select
+import re
+
 
 from config import OR_API_KEY, ALL_MODELS
 from handlers.utils import send_long_message
@@ -24,6 +27,14 @@ client = AsyncOpenAI(
     base_url="https://openrouter.ai/api/v1",
     api_key=OR_API_KEY,
 )
+
+
+def escape_markdown(text: str) -> str:
+    """
+    Экранируем специальные символы MarkdownV2, чтобы Telegram не ругался.
+    """
+    return re.sub(r'([_*\[\]()~`>#+\-=|{}.!])', r'\\\1', text)
+
 
 async def generate_response_from_ai(text: str, model_code: str):
     """
@@ -62,9 +73,12 @@ async def generating(message: Message, state: FSMContext):
     try:
         # Получаем выбранную пользователем модель из БД
         async with SessionLocal() as session:
-            user_in_db = await session.get(User, message.from_user.id)
+            stmt = select(User).where(User.tg_id == message.from_user.id)
+            result = await session.execute(stmt)
+            user_in_db = result.scalar_one_or_none()
+            # user_in_db = await session.get(User, message.from_user.id)
             if not user_in_db or not user_in_db.ai_model_id:
-                await message.answer("Пожалуйста, сначала выберите AI-модель командой /models.")
+                await message.answer("Пожалуйста, сначала выберите AI-модель командой.")
                 await state.clear()
                 return
             
@@ -87,7 +101,10 @@ async def generating(message: Message, state: FSMContext):
         else:
             response = await generate_response_from_ai(message.text, model_code=selected_model_code)
             
-        await send_long_message(message, response.response)
+        await send_long_message(message, escape_markdown(response))
+
+        # await send_long_message(message, response)
+        # await send_long_message(message, response.response)
         
     except Exception as e:
         await message.answer(f"Произошла ошибка при генерации ответа: {e}")
