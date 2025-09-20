@@ -8,7 +8,7 @@ from sqlalchemy import select
 from database.engine import SessionLocal
 from database.models import User
 
-# Импортируем функцию, которая строит клавиатуру, из вашего файла
+# Импортируем функцию, которая строит клавиатуру
 from kb.inline_kb.models_ai_kb import build_models_keyboard
 from config import ALL_MODELS
 
@@ -53,38 +53,3 @@ async def select_model_callback(callback: CallbackQuery):
         except Exception as e:
             print(f"Ошибка при выборе модели: {e}")
             await callback.answer(f"Произошла ошибка: {e}", show_alert=True)
-
-
-
-
-# Заменён на кусок который выше
-# @settings_router.callback_query(F.data.startswith("select_model:"))
-# async def select_model_callback(callback: CallbackQuery):
-#     """
-#     Обрабатывает нажатие на кнопку выбора модели.
-#     """
-#     model_id = int(callback.data.split(":")[1])
-
-#     async with SessionLocal() as session:
-#         try:
-#             user = (await session.execute(select(User).where(User.tg_id == callback.from_user.id))).scalar_one_or_none()
-
-            
-#             if not user:
-#                 await callback.answer("Произошла ошибка. Попробуйте снова.")
-#                 return
-
-#             user.ai_model_id = model_id
-#             await session.commit()
-            
-#             selected_model_name = next((model['name'] for model in ALL_MODELS if model['id'] == model_id), 'Неизвестная модель')
-
-#             await callback.message.edit_text(
-#                 f"Вы выбрали модель **{selected_model_name}**.",
-#                 reply_markup=None
-#             )
-#         except Exception as e:
-#             await callback.answer(f"Произошла ошибка: {e}")
-#             print(f"Ошибка при выборе модели: {e}")
-#         finally:
-#             await callback.answer()

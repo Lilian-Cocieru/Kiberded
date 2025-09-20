@@ -1,4 +1,5 @@
 # C:\Users\Computer\Desktop\python\Kiberded\services\ai_models_sync.py
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from config import ALL_MODELS
