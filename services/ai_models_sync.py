@@ -2,7 +2,7 @@
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from config import ALL_MODELS
+from config import FREE_MODELS  #, ALL_MODELS
 from database.models import AIModel
 from database.engine import SessionLocal
 
@@ -12,7 +12,7 @@ async def sync_ai_models():
     """Синхронизируем модели из config.py с таблицей ai_models"""
     async with SessionLocal() as session:
         async with session.begin():
-            for model_data in ALL_MODELS:
+            for model_data in FREE_MODELS:
                 stmt = select(AIModel).where(AIModel.name == model_data["name"])
                 result = await session.execute(stmt)
                 model = result.scalar_one_or_none()

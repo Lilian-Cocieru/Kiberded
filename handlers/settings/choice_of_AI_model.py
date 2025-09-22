@@ -10,7 +10,7 @@ from database.models import User
 
 # Импортируем функцию, которая строит клавиатуру
 from kb.inline_kb.models_ai_kb import build_models_keyboard
-from config import ALL_MODELS
+from config import FREE_MODELS  # , ALL_MODELS
 
 # Создаём роутер для настроек
 settings_router = Router()
@@ -43,7 +43,7 @@ async def select_model_callback(callback: CallbackQuery):
             user.ai_model_id = model_id
             await session.commit()
 
-            selected_model_name = next((m['name'] for m in ALL_MODELS if m['id'] == model_id), 'Неизвестная модель')
+            selected_model_name = next((m['name'] for m in FREE_MODELS if m['id'] == model_id), 'Неизвестная модель')
 
             await callback.message.edit_text(
                 f"Вы выбрали модель **{selected_model_name}**.",

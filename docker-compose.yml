@@ -8,9 +8,9 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - db_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+      - kiberded-db-data:/var/lib/postgresql/data
+
+
 
   bot:
     build: .
@@ -29,4 +29,4 @@ services:
 
 
 volumes:
-  db_data:
+  kiberded-db-data:

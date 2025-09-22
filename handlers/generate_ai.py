@@ -10,7 +10,7 @@ from sqlalchemy import select
 import re
 
 
-from config import OR_API_KEY, ALL_MODELS
+from config import OR_API_KEY, FREE_MODELS  # , ALL_MODELS
 from handlers.utils import send_long_message
 from database.data_loader import create_and_save_index
 from database.engine import SessionLocal
@@ -82,7 +82,7 @@ async def generating(message: Message, state: FSMContext):
                 return
             
             # Находим код модели по ID, используя наш список ALL_MODELS
-            selected_model_code = next((model['model_code'] for model in ALL_MODELS if model['id'] == user_in_db.ai_model_id), None)
+            selected_model_code = next((model['model_code'] for model in FREE_MODELS if model['id'] == user_in_db.ai_model_id), None)
             
             if not selected_model_code:
                 await message.answer("Произошла ошибка при выборе модели. Пожалуйста, выберите её снова.")

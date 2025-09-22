@@ -15,15 +15,8 @@ TG_TOKEN = os.getenv("TEST_BOT_TOKEN")
 OR_API_KEY = os.getenv("TEST_OPENROUTER_API_KEY")
 
 
-MODEL_GPT4O = {
-    "id": 1,
-    "name": "GPT-4o",
-    "provider": "OpenRouter",
-    "model_code": "openai/gpt-4o",
-    "is_paid": True,
-    "default_limit": 500000,
-    "is_active": True
-}
+
+# Бесплатные модели
 
 MODEL_QWEN = {
     "id": 2,
@@ -38,12 +31,27 @@ MODEL_QWEN = {
 MODEL_GEMINI_FLASH = {
     "id": 3,
     "name": "Gemini Flash",
-    "provider": "Google",
+    "provider": "OpenRouter",
     "model_code": "google/gemini-1.5-flash",
     "is_paid": False,
     "default_limit": 100000,
     "is_active": True
 }
 
-# ALL_MODELS = [MODEL_GPT4O, MODEL_QWEN, MODEL_GEMINI_FLASH]
-ALL_MODELS = [MODEL_QWEN, MODEL_GEMINI_FLASH]
+
+FREE_MODELS = [MODEL_QWEN, MODEL_GEMINI_FLASH]
+
+
+# Платные модели
+
+MODEL_GPT4O = {
+    "id": 1,
+    "name": "GPT-4o",
+    "provider": "OpenRouter",
+    "model_code": "openai/gpt-4o",
+    "is_paid": True,
+    "default_limit": 500000,
+    "is_active": True
+}
+
+# ALL_MODELS = [MODEL_GPT4O]
