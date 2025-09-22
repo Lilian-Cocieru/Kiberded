@@ -1,5 +1,4 @@
 
-# C:\Users\Computer\Desktop\python\Kiberded\handlers\start.py
 
 # C:\Users\Computer\Desktop\python\Kiberded\handlers\start.py
 

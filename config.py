@@ -15,6 +15,7 @@ TG_TOKEN = os.getenv("TEST_BOT_TOKEN")
 OR_API_KEY = os.getenv("TEST_OPENROUTER_API_KEY")
 
 
+DEFAULT_EMBED_MODEL = "local:BAAI/bge-small-en-v1.5"  # Пока оставляем как есть
 
 # Бесплатные модели
 

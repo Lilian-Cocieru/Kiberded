@@ -9,7 +9,7 @@ from openai import AsyncOpenAI
 from sqlalchemy import select
 import re
 
-
+from prompts import TEACHER_SYSTEM_PROMPT
 from config import OR_API_KEY, FREE_MODELS  # , ALL_MODELS
 from handlers.utils import send_long_message
 from database.data_loader import create_and_save_index
@@ -44,9 +44,11 @@ async def generate_response_from_ai(text: str, model_code: str):
         model=model_code,  # Используем модель, переданную в аргументах
         messages=[
             {
-                "role": "user",
-                "content": text
-            }
+                "role": "system", "content": TEACHER_SYSTEM_PROMPT
+                },
+            {
+                "role": "user", "content": text
+                }
         ]
     )
     print(completion)

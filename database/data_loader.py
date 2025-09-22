@@ -1,3 +1,5 @@
+
+# C:\Users\Computer\Desktop\python\Kiberded\database\data_loader.py
 import asyncio
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -7,7 +9,7 @@ from llama_index.core.embeddings import resolve_embed_model
 
 from database.engine import SessionLocal
 from database.models import Lesson, Task, User
-
+from config import DEFAULT_EMBED_MODEL
 async def get_user_data_for_rag(session: AsyncSession, user_id: int):
     """
     Асинхронно извлекает уроки и задачи конкретного пользователя
@@ -52,7 +54,8 @@ async def create_and_save_index(user_id: int):
             documents = [Document(text=text) for text in user_data]
             
             # Загружаем модель для создания эмбеддингов
-            embed_model = resolve_embed_model("local:BAAI/bge-small-en-v1.5")
+            embed_model = resolve_embed_model(DEFAULT_EMBED_MODEL)
+            # embed_model = resolve_embed_model("local:BAAI/bge-small-en-v1.5")
             
             # Создаем индекс на основе документов
             index = VectorStoreIndex.from_documents(documents, embed_model=embed_model)
